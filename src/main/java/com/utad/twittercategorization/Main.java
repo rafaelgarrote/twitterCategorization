@@ -38,15 +38,17 @@ public class Main {
 
         }
         /****************       ****************/
+        String hashtagFilter = "cultura";
+
 
         TopologyBuilder builder = new TopologyBuilder();
 
         FilterQuery tweetFilterQuery = new FilterQuery();
-        tweetFilterQuery.track(new String[]{"amor"});
+        tweetFilterQuery.track(new String[]{hashtagFilter});
 
         TwitterSpout spout = new TwitterSpout(consumerKey, consumerSecret, accessToken, accessTokenSecret, tweetFilterQuery);
 
-        HashtagExtractionBolt hashtag = new HashtagExtractionBolt();
+        HashtagExtractionBolt hashtag = new HashtagExtractionBolt(hashtagFilter);
 
 
         //FileWriterBolt fileWriterBolt = new FileWriterBolt("/tmp/contador.txt");
