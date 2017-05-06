@@ -1,4 +1,4 @@
-package com.utad.twittercategorization.spout;
+package com.utad.twittercategorization.spouts;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TwitterSpout extends BaseRichSpout {
 
-    public static final String MESSAGE = "message";
+    public static final String MESSAGE = "tweet";
     private final String _accessTokenSecret;
     private final String _accessToken;
     private final String _consumerSecret;

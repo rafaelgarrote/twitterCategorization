@@ -31,21 +31,25 @@ public class GeoBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         String location = "";
-        TweetFieldsCategorization tweet = (TweetFieldsCategorization) tuple.getValueByField("tweet");
-        HashMap<String, ArrayList<String>> entities = tweet.getEntities();
-        for(String  key: entities.keySet()) {
-            if(entities.get(key).contains("Location")){
-                location = key;
-                break;
-            }
-        }
 
-        if(!location.equals("")) {
-            String latLong = GeoUtils.getCity(location);
-            if(!latLong.equals("")) {
-                tweet.setCoordinates(latLong);
-                _collector.emit(tuple,  new Values(tweet));
-                _collector.ack(tuple);
+        TweetFieldsCategorization tweet = (TweetFieldsCategorization) tuple.getValueByField("tweet");
+        if(tweet.getEntities() != null) {
+            HashMap<String, ArrayList<String>> entities = tweet.getEntities();
+
+            for (String key : entities.keySet()) {
+                if (entities.get(key).contains("Location")) {
+                    location = key;
+                    break;
+                }
+            }
+
+            if (!location.equals("")) {
+                String latLong = GeoUtils.getCity(location);
+                if (!latLong.equals("")) {
+                    tweet.setCoordinates(latLong);
+                    _collector.emit(tuple, new Values(tweet));
+                    _collector.ack(tuple);
+                }
             }
         }
     }

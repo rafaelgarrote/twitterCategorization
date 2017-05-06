@@ -1,14 +1,11 @@
 package com.utad.twittercategorization.utils;
 
-import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 /**
  * Created by utad on 5/05/17.

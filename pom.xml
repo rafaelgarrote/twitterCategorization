@@ -98,7 +98,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>twittercategorization</mainClass>
+                            <mainClass>com.utad.twittercategorization.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

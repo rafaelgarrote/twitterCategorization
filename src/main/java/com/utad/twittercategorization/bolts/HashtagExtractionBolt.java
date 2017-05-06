@@ -1,4 +1,4 @@
-package com.utad.twittercategorization.bolt;
+package com.utad.twittercategorization.bolts;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -37,7 +37,7 @@ public class HashtagExtractionBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        Status status = (Status) tuple.getValueByField("message");
+        Status status = (Status) tuple.getValueByField("tweet");
 
         TweetFieldsCategorization tweetFieldsCategorization = new TweetFieldsCategorization();
         StringTokenizer st = new StringTokenizer(status.getText());
@@ -48,23 +48,23 @@ public class HashtagExtractionBolt extends BaseRichBolt {
             if (StringUtils.startsWith(term, "#")){
                 String hashtag = term;
                 if (hashtag.contains(hashTagFilter)){
-                    tweetFieldsCategorization.setIdUserTwitter(status.getUser().getId()+"");
-                    tweetFieldsCategorization.setCoordinates(status.getGeoLocation().toString());
+                    tweetFieldsCategorization.setIdUserTwitter(status.getUser().getName());
                     tweetFieldsCategorization.setHashTag(hashtag);
                     tweetFieldsCategorization.setText(status.getText());
+                    _collector.emit(new Values(tweetFieldsCategorization));
+                    // Confirm that this tuple has been treated.
+                    _collector.ack(tuple);
                 }
             }
         }
 
-        _collector.emit(new Values(tweetFieldsCategorization));
-        // Confirm that this tuple has been treated.
-        _collector.ack(tuple);
+
 
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("entity","text"));
+        outputFieldsDeclarer.declare(new Fields("tweet"));
     }
 
     @Override

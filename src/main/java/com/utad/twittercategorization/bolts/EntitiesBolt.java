@@ -26,21 +26,25 @@ public class EntitiesBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        TweetFieldsCategorization tweet = (TweetFieldsCategorization) tuple.getValueByField("message");
-
-        //Del object extraer el TweetText (getText)
-        String tweetText = tweet.getText();
-
         try {
-            HashMap myEntities = EntitiesUtils.hagoGet(tweetText);
+            TweetFieldsCategorization tweet = (TweetFieldsCategorization) tuple.getValueByField("tweet");
+
+            //Del object extraer el TweetText (getText)
+            String tweetText = tweet.getText();
+
+            try {
+                HashMap myEntities = EntitiesUtils.hagoGet(tweetText);
+                //Añadir el Hashmap al objeto tweet
+                tweet.setEntities(myEntities);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            _collector.emit(tuple, new Values(tweet));
+            _collector.ack(tuple);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //Añadir el Hashmap al objeto tweet
-
-        _collector.emit(tuple,  new Values(tweet));
-        _collector.ack(tuple);
     }
 
     @Override

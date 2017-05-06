@@ -4,11 +4,13 @@ import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
 import backtype.storm.topology.TopologyBuilder;
+import com.utad.twittercategorization.bolts.EntitiesBolt;
+import com.utad.twittercategorization.bolts.FileWriterBolt;
+import com.utad.twittercategorization.bolts.GeoBolt;
 import com.utad.twittercategorization.utils.EntitiesUtils;
 import twitter4j.FilterQuery;
-import com.utad.twittercategorization.spout.TwitterSpout;
-import com.utad.twittercategorization.bolt.HashtagExtractionBolt;
-import beans.TweetFieldsCategorization;
+import com.utad.twittercategorization.spouts.TwitterSpout;
+import com.utad.twittercategorization.bolts.HashtagExtractionBolt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +44,7 @@ public class Main {
 
         }
         /****************       ****************/
-        String hashtagFilter = "cultura";
+        String hashtagFilter = "FeriaDeUteros";
 
 
         TopologyBuilder builder = new TopologyBuilder();
@@ -53,19 +55,16 @@ public class Main {
         TwitterSpout spout = new TwitterSpout(consumerKey, consumerSecret, accessToken, accessTokenSecret, tweetFilterQuery);
 
         HashtagExtractionBolt hashtag = new HashtagExtractionBolt(hashtagFilter);
-
-
-        //FileWriterBolt fileWriterBolt = new FileWriterBolt("/tmp/contador.txt");
-        //LanguageDetectionBolt lenguaje= new LanguageDetectionBolt();
-        //RollingCountBolt rollingCountBolt = new RollingCountBolt(9,3);
+        EntitiesBolt entities = new EntitiesBolt();
+        GeoBolt geo = new GeoBolt();
+        FileWriterBolt writer = new FileWriterBolt("/tmp/tweet");
 
         builder.setSpout("spoutLeerTwitter",spout,1);
-   //     builder.setBolt("lenguaje",lenguaje,1).shuffleGrouping("spoutLeerTwitter");
-        builder.setBolt("hashtag",hashtag,1).shuffleGrouping("lenguaje");
-        //builder.setBolt("cont",rollingCountBolt, 1).shuffleGrouping("hashtag");
-     //   builder.setBolt("cont",rollingCountBolt, 1).fieldsGrouping("hashtag",new Fields("entity"));
-       //    builder.setBolt("escribirFichero",fileWriterBolt,1).shuffleGrouping("cont");
-//
+        builder.setBolt("hashtag",hashtag,1).shuffleGrouping("spoutLeerTwitter");
+        builder.setBolt("entities", entities).shuffleGrouping("hashtag");
+        builder.setBolt("geo", geo).shuffleGrouping("entities");
+        builder.setBolt("writer", writer).shuffleGrouping("geo");
+
         Config conf = new Config();
         conf.setDebug(true);
 
@@ -85,14 +84,5 @@ public class Main {
             cluster.shutdown();
         }
 
-
-
-        HashMap myEntities = EntitiesUtils.hagoGet("Bonito viaje en París, ha sido mejor que el de Londres. Me ha gustado el Louvre y los cuadros de Da Vinci");
-
-        for (Object name: myEntities.keySet()){
-            String key =name.toString();
-            ArrayList value = (ArrayList) myEntities.get(name);
-            System.out.println(key + " " + value);
-        }
     }
 }

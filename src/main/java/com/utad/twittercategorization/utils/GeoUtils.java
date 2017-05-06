@@ -29,8 +29,8 @@ public class GeoUtils {
             String queryString = QUERY_STRING + URLEncoder.encode(query) + SENSOR;
             String url = GOOGLE_URL + queryString;
             System.out.println(url);
-            result = HTTPUtils.getHTML(url);
-            parseResult(result);
+            String response = HTTPUtils.getHTML(url);
+            result = parseResult(response);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,8 +42,8 @@ public class GeoUtils {
         JSONObject obj = new JSONObject(result);
         JSONObject results = (JSONObject) obj.getJSONArray("results").get(0);
         JSONObject location = results.getJSONObject("geometry").getJSONObject("location");
-        Double latitude =location.getDouble("lat");
-        Double longitude =location.getDouble("lng");
+        Double latitude = location.getDouble("lat");
+        Double longitude = location.getDouble("lng");
         return latitude + "," + longitude;
     }
 
