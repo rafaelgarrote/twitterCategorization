@@ -8,7 +8,7 @@ import com.utad.twittercategorization.utils.GeoUtils;
 public class Main {
 
     public static void main(String [ ] args) {
-        String response = GeoUtils.getCity("40.714224","-73.961452");
+        String response = GeoUtils.getCity("Madrid");
         System.out.println(response);
     }
 }
