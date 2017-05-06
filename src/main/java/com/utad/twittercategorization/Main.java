@@ -4,10 +4,14 @@ import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
 import backtype.storm.topology.TopologyBuilder;
+import com.utad.twittercategorization.utils.EntitiesUtils;
 import twitter4j.FilterQuery;
 import com.utad.twittercategorization.spout.TwitterSpout;
 import com.utad.twittercategorization.bolt.HashtagExtractionBolt;
 import beans.TweetFieldsCategorization;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by utad on 5/05/17.
@@ -77,6 +81,16 @@ public class Main {
             Thread.sleep(460000);
 
             cluster.shutdown();
+        }
+
+
+
+        HashMap myEntities = EntitiesUtils.hagoGet("Bonito viaje en París, ha sido mejor que el de Londres. Me ha gustado el Louvre y los cuadros de Da Vinci");
+
+        for (Object name: myEntities.keySet()){
+            String key =name.toString();
+            ArrayList value = (ArrayList) myEntities.get(name);
+            System.out.println(key + " " + value);
         }
     }
 }
