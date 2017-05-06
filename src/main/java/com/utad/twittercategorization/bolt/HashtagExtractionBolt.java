@@ -22,8 +22,12 @@ import java.util.StringTokenizer;
  * To change this template use File | Settings | File Templates.
  */
 public class HashtagExtractionBolt extends BaseRichBolt {
+    private String hashTagFilter;
     private OutputCollector _collector;
 
+    public HashtagExtractionBolt(String hashTagFilter) {
+        this.hashTagFilter = hashTagFilter;
+    }
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
@@ -34,11 +38,8 @@ public class HashtagExtractionBolt extends BaseRichBolt {
     @Override
     public void execute(Tuple tuple) {
         Status status = (Status) tuple.getValueByField("message");
+
         TweetFieldsCategorization tweetFieldsCategorization = new TweetFieldsCategorization();
-
-        tweetFieldsCategorization.setIdUserTwitter(status.getUser().getId()+"");
-        tweetFieldsCategorization.setCoordinates(status.getGeoLocation().toString());
-
         StringTokenizer st = new StringTokenizer(status.getText());
 
         while (st.hasMoreElements()) {
@@ -46,12 +47,16 @@ public class HashtagExtractionBolt extends BaseRichBolt {
             String term = (String) st.nextElement();
             if (StringUtils.startsWith(term, "#")){
                 String hashtag = term;
-                
-                _collector.emit(new Values(hashtag,"Agustin"));
+                if (hashtag.contains(hashTagFilter)){
+                    tweetFieldsCategorization.setIdUserTwitter(status.getUser().getId()+"");
+                    tweetFieldsCategorization.setCoordinates(status.getGeoLocation().toString());
+                    tweetFieldsCategorization.setHashTag(hashtag);
+                    tweetFieldsCategorization.setText(status.getText());
+                }
             }
-
         }
 
+        _collector.emit(new Values(tweetFieldsCategorization));
         // Confirm that this tuple has been treated.
         _collector.ack(tuple);
 
