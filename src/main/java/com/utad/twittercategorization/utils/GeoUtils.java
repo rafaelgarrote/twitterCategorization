@@ -27,7 +27,7 @@ public class GeoUtils {
     private static String parseResult(String result) {
         JSONObject obj = new JSONObject(result);
         JSONObject ll = (JSONObject) obj.getJSONArray("results").get(0);
-        ll.getJSONArray("address_components")
+        ll.getJSONArray("address_components");
         return "";
     }
 
