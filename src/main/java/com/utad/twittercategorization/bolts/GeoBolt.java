@@ -6,7 +6,9 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 import beans.TweetFieldsCategorization;
+import com.utad.twittercategorization.utils.GeoUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ public class GeoBolt extends BaseRichBolt {
 
     private OutputCollector _collector;
 
+    //Location
+
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
         _collector = outputCollector;
@@ -26,10 +30,24 @@ public class GeoBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
+        String location = "";
         TweetFieldsCategorization tweet = (TweetFieldsCategorization) tuple.getValueByField("tweet");
         HashMap<String, ArrayList<String>> entities = tweet.getEntities();
+        for(String  key: entities.keySet()) {
+            if(entities.get(key).contains("Location")){
+                location = key;
+                break;
+            }
+        }
 
-
+        if(!location.equals("")) {
+            String latLong = GeoUtils.getCity(location);
+            if(!latLong.equals("")) {
+                tweet.setCoordinates(latLong);
+                _collector.emit(tuple,  new Values(tweet));
+                _collector.ack(tuple);
+            }
+        }
     }
 
     @Override
