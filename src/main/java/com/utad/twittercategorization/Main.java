@@ -17,10 +17,10 @@ public class Main {
 
     public static void main(String args[]) throws Exception{
 
-        String consumerKey = "7yeBi8yV4TmTTbtDOgjnCmbVR";
-        String consumerSecret = "qm3ocGojWQer81PTFdexaHy1qfuPUul8FjlvYLCE5QgJM5Tt7T";
-        String accessToken = "3377864824-1K8RG2NkNyOuMzSqn83f2DB5NkX3YUyP5D4bhER";
-        String accessTokenSecret = "m3WchHi977rSoAu0LmCpZXgSBN6aWHOnNwiOR3pQCIMLH";
+        String consumerKey = "";
+        String consumerSecret = "";
+        String accessToken = "";
+        String accessTokenSecret = "";
 
         /**************** SETUP ****************/
         String remoteClusterTopologyName = null;
